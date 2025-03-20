@@ -23,13 +23,25 @@ let preloader = gsap.timeline({
 });
 
 const hidePreloader = () => {
-  $('.page-load').fadeOut('slow', () => {
-    $('html,body').removeClass('u-overflow-hidden');
-    if (isDesktop) {
-      lenis.start();
-      lenis.resize();
-    }
-  });
+  if (!isWindowLoaded) {
+    $(window).on('load', function () {
+      $('.page-load').fadeOut('slow', () => {
+        $('html,body').removeClass('u-overflow-hidden');
+        if (isDesktop) {
+          lenis.start();
+          lenis.resize();
+        }
+      });
+    });
+  } else {
+    $('.page-load').fadeOut('slow', () => {
+      $('html,body').removeClass('u-overflow-hidden');
+      if (isDesktop) {
+        lenis.start();
+        lenis.resize();
+      }
+    });
+  }
 };
 
 // Setup the animation sequence
