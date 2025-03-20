@@ -15,7 +15,7 @@ const trackVirtualPageview = (virtualURL, virtualPageTitle) => {
 // #region Prealoder
 let isWindowLoaded = false;
 let preloader = gsap.timeline({
-  defaults: { duration: 0.5 },
+  defaults: { duration: 0.3 },
   paused: true,
   onComplete: function () {
     hidePreloader();
