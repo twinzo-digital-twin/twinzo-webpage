@@ -17,7 +17,6 @@ let isWindowLoaded = false;
 let preloader = gsap.timeline({
   defaults: { duration: 0.5 },
   paused: true,
-  repeat: 1,
   onComplete: function () {
     hidePreloader();
   },
