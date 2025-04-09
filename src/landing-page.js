@@ -15,7 +15,6 @@ const trackVirtualPageview = (virtualURL, virtualPageTitle) => {
 // #region Prealoder
 let isWindowLoaded = false;
 let preloader = gsap.timeline({
-  defaults: { duration: 0.3 },
   paused: true,
   onComplete: function () {
     hidePreloader();
@@ -46,25 +45,26 @@ const hidePreloader = () => {
 
 // Setup the animation sequence
 preloader
-  .to('.page-load_logo', { opacity: 1, stagger: 0.2 })
-  .to('.page-load_t', { width: '100%' })
-  .to('.page-load_logo', { opacity: 1 }, '<')
-  .to('.page-load_brand', { opacity: 0 });
+  .to('.page-load_logo', { opacity: 1, duration: 0.2 })
+  .to('.page-load_t', { width: '100%', duration: 0.2 }, '<')
+  .to('.page-load_brand', { opacity: 0, duration: 0.2 }, '<');
 
-// Init
 $(document).ready(function () {
-  if (!sessionStorage.getItem('preloader')) {
-    $('html,body').addClass('u-overflow-hidden');
-    preloader.play();
-    sessionStorage.setItem('preloader', 'true');
-  } else {
-    hidePreloader();
+  $('html,body').addClass('u-overflow-hidden');
+
+  // Start the preloader animation
+  preloader.play();
+
+  // If the page is already loaded, complete the preloader immediately
+  if (document.readyState === 'complete') {
+    preloader.progress(1);
   }
 });
 
-// when repeatCount hits 2 start checking/waiting for the window load
+// Wait for full page load before hiding preloader
 $(window).on('load', function () {
-  isWindowLoaded = true; // Set the window load flag to true
+  isWindowLoaded = true;
+  preloader.progress(1);
 });
 // #endregion
 
@@ -143,6 +143,8 @@ $(document).ready(function () {
       let heroVisual = $('.hp-hero_visual');
       let heroPhone = $('.hp-hero_phone');
       let heroVideo = $('.hp-hero_phone-video');
+      let headerStats = $('.hp-devices_stats');
+      let scrollButton = $('.lp-scroll-btn');
 
       let tl = gsap.timeline({
         scrollTrigger: {
@@ -191,6 +193,9 @@ $(document).ready(function () {
       }
       tl.to(heroPhone, { rotate: -90, y: '-4rem' }, '<');
       tl.to(heroVideo, { rotate: 90 }, '<');
+      tl.to(headerStats, { opacity: 1, duration: 0.5 }, '<');
+      tl.to(scrollButton, { opacity: 1, duration: 0.5 }, '<');
+      tl.to($('.hp-steps_head'), { opacity: 1, duration: 0.5 }, '<');
     };
 
     const step01_01 = () => {
@@ -479,58 +484,6 @@ $(document).ready(function () {
   // #endregion
 
   // #region Types Animation
-  function typeAnimation() {
-    let typesSection = $('.hp-types_wall');
-    let heading = typesSection.find('h2');
-    let headingText = heading.attr('data-headline-text').split(',');
-    let image = $('.hp-types_visual .hp-types_phone-video');
-    let gtmEvents = [
-      ['/yourfactory', 'yourfactory'],
-      ['/warehouse', '/warehouse'],
-    ];
-
-    const typesStepAnimation = (index) => {
-      let tl = gsap.timeline();
-      tl.to(heading, {
-        yPercent: 50,
-        opacity: 0,
-        duration: 0.3,
-        onComplete: () => {
-          if (gtmEvents[index]) {
-            const [virtualURL, virtualPageTitle] = gtmEvents[index];
-            trackVirtualPageview(virtualURL, virtualPageTitle);
-          }
-        },
-      });
-      tl.to(image, { opacity: 0, duration: 0.3 }, '<');
-      tl.to(heading, { text: headingText[index], duration: 0 });
-      tl.to(heading, { yPercent: 0, opacity: 1 });
-      tl.to(image[index], { opacity: 1 }, '<');
-      return tl;
-    };
-
-    // Text
-    let main = gsap.timeline({
-      scrollTrigger: {
-        trigger: typesSection,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1,
-      },
-    });
-
-    // Add animations for the other steps
-    for (let i = 1; i < headingText.length; i++) {
-      main.add(typesStepAnimation(i));
-    }
-
-    // Add the first step animation only for scrolling back
-    ScrollTrigger.create({
-      trigger: typesSection,
-      start: 'top top',
-      end: 'bottom bottom',
-    });
-  }
   function typePocket() {
     let tl = gsap.timeline({
       scrollTrigger: {
@@ -549,7 +502,6 @@ $(document).ready(function () {
   }
 
   // Init
-  typeAnimation();
   typePocket();
 
   // Extra calls for the GTM events

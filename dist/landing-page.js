@@ -3,7 +3,7 @@
   // bin/live-reload.js
   new EventSource(`${"http://localhost:3000"}/esbuild`).addEventListener("change", () => location.reload());
 
-  // src/homepage.js
+  // src/landing-page.js
   var isDesktop = $(window).width() > 991;
   var trackVirtualPageview = (virtualURL, virtualPageTitle) => {
     if (!window.dataLayer.some((event) => event.virtualPageTitle === virtualPageTitle)) {
@@ -16,7 +16,6 @@
   };
   var isWindowLoaded = false;
   var preloader = gsap.timeline({
-    defaults: { duration: 0.3 },
     paused: true,
     onComplete: function() {
       hidePreloader();
@@ -43,18 +42,17 @@
       });
     }
   };
-  preloader.to(".page-load_logo", { opacity: 1, stagger: 0.2 }).to(".page-load_t", { width: "100%" }).to(".page-load_logo", { opacity: 1 }, "<").to(".page-load_brand", { opacity: 0 });
+  preloader.to(".page-load_logo", { opacity: 1, duration: 0.2 }).to(".page-load_t", { width: "100%", duration: 0.2 }, "<").to(".page-load_brand", { opacity: 0, duration: 0.2 }, "<");
   $(document).ready(function() {
-    if (!sessionStorage.getItem("preloader")) {
-      $("html,body").addClass("u-overflow-hidden");
-      preloader.play();
-      sessionStorage.setItem("preloader", "true");
-    } else {
-      hidePreloader();
+    $("html,body").addClass("u-overflow-hidden");
+    preloader.play();
+    if (document.readyState === "complete") {
+      preloader.progress(1);
     }
   });
   $(window).on("load", function() {
     isWindowLoaded = true;
+    preloader.progress(1);
   });
   $(document).ready(function() {
     function HeroAnimation() {
@@ -118,6 +116,8 @@
         let heroVisual = $(".hp-hero_visual");
         let heroPhone = $(".hp-hero_phone");
         let heroVideo = $(".hp-hero_phone-video");
+        let headerStats = $(".hp-devices_stats");
+        let scrollButton = $(".lp-scroll-btn");
         let tl = gsap.timeline({
           scrollTrigger: {
             trigger: heroSteps.eq(0),
@@ -164,6 +164,9 @@
         }
         tl.to(heroPhone, { rotate: -90, y: "-4rem" }, "<");
         tl.to(heroVideo, { rotate: 90 }, "<");
+        tl.to(headerStats, { opacity: 1, duration: 0.5 }, "<");
+        tl.to(scrollButton, { opacity: 1, duration: 0.5 }, "<");
+        tl.to($(".hp-steps_head"), { opacity: 1, duration: 0.5 }, "<");
       };
       const step01_01 = () => {
         let contentToHide = $("[data-hero-hide]");
@@ -412,51 +415,6 @@
       main.add(darkMenu);
     }
     HeroAnimation();
-    function typeAnimation() {
-      let typesSection = $(".hp-types_wall");
-      let heading = typesSection.find("h2");
-      let headingText = heading.attr("data-headline-text").split(",");
-      let image = $(".hp-types_visual .hp-types_phone-video");
-      let gtmEvents = [
-        ["/yourfactory", "yourfactory"],
-        ["/warehouse", "/warehouse"]
-      ];
-      const typesStepAnimation = (index) => {
-        let tl = gsap.timeline();
-        tl.to(heading, {
-          yPercent: 50,
-          opacity: 0,
-          duration: 0.3,
-          onComplete: () => {
-            if (gtmEvents[index]) {
-              const [virtualURL, virtualPageTitle] = gtmEvents[index];
-              trackVirtualPageview(virtualURL, virtualPageTitle);
-            }
-          }
-        });
-        tl.to(image, { opacity: 0, duration: 0.3 }, "<");
-        tl.to(heading, { text: headingText[index], duration: 0 });
-        tl.to(heading, { yPercent: 0, opacity: 1 });
-        tl.to(image[index], { opacity: 1 }, "<");
-        return tl;
-      };
-      let main = gsap.timeline({
-        scrollTrigger: {
-          trigger: typesSection,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1
-        }
-      });
-      for (let i = 1; i < headingText.length; i++) {
-        main.add(typesStepAnimation(i));
-      }
-      ScrollTrigger.create({
-        trigger: typesSection,
-        start: "top top",
-        end: "bottom bottom"
-      });
-    }
     function typePocket() {
       let tl = gsap.timeline({
         scrollTrigger: {
@@ -472,7 +430,6 @@
         { opacity: 1, yPercent: 0, stagger: 0.3 }
       );
     }
-    typeAnimation();
     typePocket();
     $(".hp-types_wall").each(function() {
       let tl = gsap.timeline({
@@ -598,4 +555,4 @@
     }
   });
 })();
-//# sourceMappingURL=homepage.js.map
+//# sourceMappingURL=landing-page.js.map
