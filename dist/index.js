@@ -154,6 +154,9 @@
           const $form = $(this);
           const formId = $form.attr("id") || Math.random().toString(36).substr(2, 9);
           const $emailInput = $form.find('input[type="email"]');
+          if ($emailInput.attr("data-skip-validation") === "true") {
+            return;
+          }
           const $submitButton = $form.find('input[type="submit"], button[type="submit"]');
           const $messageElement = $form.find(".input-validation");
           $messageElement.removeAttr("style").removeClass("display-message");
