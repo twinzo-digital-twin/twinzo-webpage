@@ -15,7 +15,7 @@ const trackVirtualPageview = (virtualURL, virtualPageTitle) => {
 // #region Prealoder
 let isWindowLoaded = false;
 let preloader = gsap.timeline({
-  defaults: { duration: 0.3 },
+  defaults: { duration: 0.5 },
   paused: true,
   onComplete: function () {
     hidePreloader();
@@ -23,25 +23,13 @@ let preloader = gsap.timeline({
 });
 
 const hidePreloader = () => {
-  if (!isWindowLoaded) {
-    $(window).on('load', function () {
-      $('.page-load').fadeOut('slow', () => {
-        $('html,body').removeClass('u-overflow-hidden');
-        if (isDesktop) {
-          lenis.start();
-          lenis.resize();
-        }
-      });
-    });
-  } else {
-    $('.page-load').fadeOut('slow', () => {
-      $('html,body').removeClass('u-overflow-hidden');
-      if (isDesktop) {
-        lenis.start();
-        lenis.resize();
-      }
-    });
-  }
+  $('.page-load').fadeOut('slow', () => {
+    $('html,body').removeClass('u-overflow-hidden');
+    if (isDesktop) {
+      lenis.start();
+      lenis.resize();
+    }
+  });
 };
 
 // Setup the animation sequence

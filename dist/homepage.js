@@ -16,32 +16,20 @@
   };
   var isWindowLoaded = false;
   var preloader = gsap.timeline({
-    defaults: { duration: 0.3 },
+    defaults: { duration: 0.5 },
     paused: true,
     onComplete: function() {
       hidePreloader();
     }
   });
   var hidePreloader = () => {
-    if (!isWindowLoaded) {
-      $(window).on("load", function() {
-        $(".page-load").fadeOut("slow", () => {
-          $("html,body").removeClass("u-overflow-hidden");
-          if (isDesktop) {
-            lenis.start();
-            lenis.resize();
-          }
-        });
-      });
-    } else {
-      $(".page-load").fadeOut("slow", () => {
-        $("html,body").removeClass("u-overflow-hidden");
-        if (isDesktop) {
-          lenis.start();
-          lenis.resize();
-        }
-      });
-    }
+    $(".page-load").fadeOut("slow", () => {
+      $("html,body").removeClass("u-overflow-hidden");
+      if (isDesktop) {
+        lenis.start();
+        lenis.resize();
+      }
+    });
   };
   preloader.to(".page-load_logo", { opacity: 1, stagger: 0.2 }).to(".page-load_t", { width: "100%" }).to(".page-load_logo", { opacity: 1 }, "<").to(".page-load_brand", { opacity: 0 });
   $(document).ready(function() {
