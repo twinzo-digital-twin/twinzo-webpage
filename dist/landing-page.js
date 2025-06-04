@@ -14,6 +14,31 @@
       });
     }
   };
+  var NavManager = {
+    currentState: {
+      isDark: false,
+      isFixed: false,
+      isPushed: false,
+      logoWhite: true
+    },
+    updateNav(newState) {
+      const $nav = $(".nav");
+      const $logo = $(".nav_logo");
+      if (newState.isDark !== this.currentState.isDark) {
+        $nav.toggleClass("dark", newState.isDark);
+      }
+      if (newState.isFixed !== this.currentState.isFixed) {
+        $nav.toggleClass("fixed", newState.isFixed);
+      }
+      if (newState.isPushed !== this.currentState.isPushed) {
+        $nav.toggleClass("pushed", newState.isPushed);
+      }
+      if (newState.logoWhite !== this.currentState.logoWhite) {
+        $logo.toggleClass("white", newState.logoWhite);
+      }
+      this.currentState = { ...newState };
+    }
+  };
   var isWindowLoaded = false;
   var preloader = gsap.timeline({
     paused: true,
@@ -101,10 +126,16 @@
             invalidateOnRefresh: true,
             scrub: isDesktop ? 1 : false,
             onEnter: () => {
-              $(".nav").addClass("dark");
+              NavManager.updateNav({
+                ...NavManager.currentState,
+                isDark: true
+              });
             },
             onLeaveBack: () => {
-              $(".nav").removeClass("dark");
+              NavManager.updateNav({
+                ...NavManager.currentState,
+                isDark: false
+              });
             }
           }
         });
@@ -125,29 +156,21 @@
             end: "bottom top",
             scrub: 1,
             onEnterBack: () => {
-              if (isDesktop) {
-                $(".nav").css("opacity", "0");
-              }
-              setTimeout(() => {
-                $(".nav").removeClass("fixed");
-                $(".nav_logo").addClass("white");
-              }, 200);
-              setTimeout(() => {
-                $(".nav").removeClass("pushed");
-                $(".nav").css("opacity", "1");
-              }, 300);
+              NavManager.updateNav({
+                isDark: false,
+                isFixed: false,
+                isPushed: false,
+                logoWhite: true
+              });
             },
             onLeave: () => {
-              if (isDesktop) {
-                $(".nav").css("opacity", "0");
-              }
               adjustImages();
-              $(".nav").addClass("pushed");
-              setTimeout(() => {
-                $(".nav").addClass("fixed");
-                $(".nav_logo").removeClass("white");
-                $(".nav").css("opacity", "1");
-              }, 300);
+              NavManager.updateNav({
+                isDark: true,
+                isFixed: true,
+                isPushed: true,
+                logoWhite: false
+              });
             }
           }
         });
@@ -553,6 +576,11 @@
         });
       });
     }
+    $(window).on("scroll", function() {
+      if (window.scrollY === 0) {
+        $(".nav").removeClass("dark");
+      }
+    });
   });
 })();
 //# sourceMappingURL=landing-page.js.map

@@ -12,6 +12,39 @@ const trackVirtualPageview = (virtualURL, virtualPageTitle) => {
   }
 };
 
+// Add this NEW code after trackVirtualPageview function
+const NavManager = {
+  currentState: {
+    isDark: false,
+    isFixed: false,
+    isPushed: false,
+    logoWhite: true,
+  },
+
+  updateNav(newState) {
+    const $nav = $('.nav');
+    const $logo = $('.nav_logo');
+
+    if (newState.isDark !== this.currentState.isDark) {
+      $nav.toggleClass('dark', newState.isDark);
+    }
+
+    if (newState.isFixed !== this.currentState.isFixed) {
+      $nav.toggleClass('fixed', newState.isFixed);
+    }
+
+    if (newState.isPushed !== this.currentState.isPushed) {
+      $nav.toggleClass('pushed', newState.isPushed);
+    }
+
+    if (newState.logoWhite !== this.currentState.logoWhite) {
+      $logo.toggleClass('white', newState.logoWhite);
+    }
+
+    this.currentState = { ...newState };
+  },
+};
+
 // #region Prealoder
 let isWindowLoaded = false;
 let preloader = gsap.timeline({
@@ -126,10 +159,16 @@ $(document).ready(function () {
           invalidateOnRefresh: true,
           scrub: isDesktop ? 1 : false,
           onEnter: () => {
-            $('.nav').addClass('dark');
+            NavManager.updateNav({
+              ...NavManager.currentState,
+              isDark: true,
+            });
           },
           onLeaveBack: () => {
-            $('.nav').removeClass('dark');
+            NavManager.updateNav({
+              ...NavManager.currentState,
+              isDark: false,
+            });
           },
         },
       });
@@ -153,29 +192,21 @@ $(document).ready(function () {
           end: 'bottom top',
           scrub: 1,
           onEnterBack: () => {
-            if (isDesktop) {
-              $('.nav').css('opacity', '0');
-            }
-            setTimeout(() => {
-              $('.nav').removeClass('fixed');
-              $('.nav_logo').addClass('white');
-            }, 200);
-            setTimeout(() => {
-              $('.nav').removeClass('pushed');
-              $('.nav').css('opacity', '1');
-            }, 300);
+            NavManager.updateNav({
+              isDark: false,
+              isFixed: false,
+              isPushed: false,
+              logoWhite: true,
+            });
           },
           onLeave: () => {
-            if (isDesktop) {
-              $('.nav').css('opacity', '0');
-            }
             adjustImages();
-            $('.nav').addClass('pushed');
-            setTimeout(() => {
-              $('.nav').addClass('fixed');
-              $('.nav_logo').removeClass('white');
-              $('.nav').css('opacity', '1');
-            }, 300);
+            NavManager.updateNav({
+              isDark: true,
+              isFixed: true,
+              isPushed: true,
+              logoWhite: false,
+            });
           },
         },
       });
@@ -655,6 +686,13 @@ $(document).ready(function () {
       });
     });
   }
+
+  // Ensure .dark is never stuck on nav at the top of the page
+  $(window).on('scroll', function () {
+    if (window.scrollY === 0) {
+      $('.nav').removeClass('dark');
+    }
+  });
 
   // #endregion
 });
